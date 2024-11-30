@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видео по кругу</title>
+</head>
+<body>
+    <h1>Видео по кругу</h1>
+
+    <video id="videoPlayer" width="640" height="360" controls autoplay>
+        <source id="videoSource" src="video1.mp4" type="video/mp4">
+        Ваш браузер не поддерживает элемент video.
+    </video>
+
+    <script>
+        // Список ссылок на видео
+        const videoLinks = [
+            "video1.mp4",
+            "video2.mp4",
+            "video3.mp4"
+        ];
+
+        // Получаем ссылку на видеоплеер
+        const videoPlayer = document.getElementById("videoPlayer");
+        const videoSource = document.getElementById("videoSource");
+
+        let currentVideoIndex = 0;
+
+        // Функция для смены видео
+        function changeVideo() {
+            currentVideoIndex = (currentVideoIndex + 1) % videoLinks.length;
+            videoSource.src = videoLinks[currentVideoIndex];
+            videoPlayer.load();
+            videoPlayer.play();
+        }
+
+        // Добавляем обработчик события на окончание видео
+        videoPlayer.addEventListener('ended', changeVideo);
+
+        // Начинаем воспроизведение
+        videoPlayer.play();
+    </script>
+</body>
+</html>
