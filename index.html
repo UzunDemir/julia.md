@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Видео по кругу</title>
+    <!-- Подключаем иконки Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Стиль для контейнера, в котором будет отображаться видео */
         .video-container {
@@ -31,7 +33,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            width: 100%;
+            width: auto;
         }
 
         /* Стиль для кнопок управления */
@@ -41,7 +43,10 @@
             color: white;
             padding: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 20px;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background 0.3s ease;
         }
 
         .control-button:hover {
@@ -52,6 +57,13 @@
         .volume-slider {
             margin-left: 10px;
             width: 100px;
+        }
+
+        /* Позиционирование кнопки на весь экран в правом нижнем углу */
+        #fullscreenBtn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
         }
 
         body {
@@ -68,16 +80,35 @@
             Ваш браузер не поддерживает тег video.
         </video>
 
-        <!-- Панель управления -->
+        <!-- Панель управления (левая часть) -->
         <div class="controls">
-            <button id="fullscreenBtn" class="control-button">Развернуть</button>
+            <!-- Кнопка для остановки видео -->
+            <button id="stopBtn" class="control-button"><i class="fas fa-stop"></i></button>
+
+            <!-- Кнопка для воспроизведения -->
+            <button id="playBtn" class="control-button"><i class="fas fa-play"></i></button>
+
+            <!-- Кнопка для паузы -->
+            <button id="pauseBtn" class="control-button"><i class="fas fa-pause"></i></button>
+
+            <!-- Кнопка для отключения звука -->
+            <button id="muteBtn" class="control-button"><i class="fas fa-volume-mute"></i></button>
+
+            <!-- Ползунок громкости -->
             <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
         </div>
+
+        <!-- Кнопка для развертывания на весь экран (правая часть) -->
+        <button id="fullscreenBtn" class="control-button"><i class="fas fa-expand"></i></button>
     </div>
 
     <script>
         const videoPlayer = document.getElementById('videoPlayer');
+        const stopBtn = document.getElementById('stopBtn');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const muteBtn = document.getElementById('muteBtn');
         const volumeControl = document.getElementById('volumeControl');
         const videoLinks = [
             "https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4",
@@ -110,6 +141,33 @@
                 videoPlayer.webkitRequestFullscreen();
             } else if (videoPlayer.msRequestFullscreen) { // Для IE/Edge
                 videoPlayer.msRequestFullscreen();
+            }
+        });
+
+        // Обработчик для кнопки стопа
+        stopBtn.addEventListener('click', function() {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;  // Сбросить видео в начало
+        });
+
+        // Обработчик для кнопки воспроизведения
+        playBtn.addEventListener('click', function() {
+            videoPlayer.play();
+        });
+
+        // Обработчик для кнопки паузы
+        pauseBtn.addEventListener('click', function() {
+            videoPlayer.pause();
+        });
+
+        // Обработчик для кнопки выключения звука
+        muteBtn.addEventListener('click', function() {
+            if (videoPlayer.muted) {
+                videoPlayer.muted = false;
+                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+            } else {
+                videoPlayer.muted = true;
+                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
             }
         });
 
