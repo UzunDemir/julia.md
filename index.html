@@ -12,6 +12,7 @@
             overflow: hidden;
             position: relative;
             margin: 0 auto; /* Центрирование по горизонтали */
+            background-color: black;
         }
 
         /* Стиль для видео */
@@ -21,7 +22,38 @@
             object-fit: cover; /* Масштабирование видео с сохранением пропорций */
         }
 
-        /* Стиль для скрытого фона */
+        /* Стиль для панели управления */
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        /* Стиль для кнопок управления */
+        .control-button {
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .control-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Стиль для ползунка громкости */
+        .volume-slider {
+            margin-left: 10px;
+            width: 100px;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -32,17 +64,24 @@
 <body>
     <div class="video-container">
         <video id="videoPlayer" autoplay muted loop>
-            <source src="https://www.example.com/video1.mp4" type="video/mp4">
+            <source src="https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4" type="video/mp4">
             Ваш браузер не поддерживает тег video.
         </video>
+
+        <!-- Панель управления -->
+        <div class="controls">
+            <button id="fullscreenBtn" class="control-button">Развернуть</button>
+            <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
     </div>
 
     <script>
         const videoPlayer = document.getElementById('videoPlayer');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const volumeControl = document.getElementById('volumeControl');
         const videoLinks = [
-            "https://goods-vod.kwcdn.com/goods-video/3723acba1dc743437a2fb2ec4f738a3bc07b8cf2.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4", // замените на свои видео ссылки
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/65c40fad811037838fb019ddd895a8d4084dee2a.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/a02f7e3c2aa85a6314472b2402e9bd0a76b95717.f30.mp4",
@@ -58,8 +97,26 @@
             videoPlayer.play();
         }
 
-        // Изменить видео каждые 5 секунд
+        // Изменить видео каждые 10 секунд
         setInterval(changeVideo, 10000);
+
+        // Обработчик для кнопки полноэкранного режима
+        fullscreenBtn.addEventListener('click', function() {
+            if (videoPlayer.requestFullscreen) {
+                videoPlayer.requestFullscreen();
+            } else if (videoPlayer.mozRequestFullScreen) { // Для Firefox
+                videoPlayer.mozRequestFullScreen();
+            } else if (videoPlayer.webkitRequestFullscreen) { // Для Chrome и Safari
+                videoPlayer.webkitRequestFullscreen();
+            } else if (videoPlayer.msRequestFullscreen) { // Для IE/Edge
+                videoPlayer.msRequestFullscreen();
+            }
+        });
+
+        // Обработчик для регулировки громкости
+        volumeControl.addEventListener('input', function() {
+            videoPlayer.volume = volumeControl.value;
+        });
     </script>
 </body>
 </html>
