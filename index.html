@@ -10,16 +10,16 @@
 
     <!-- Видео плеер -->
     <video id="videoPlayer" width="640" height="360" controls autoplay>
-        <source id="videoSource" src="video1.mp4" type="video/mp4">
+        <source id="videoSource" src="https://www.example.com/video1.mp4" type="video/mp4">
         Ваш браузер не поддерживает элемент video.
     </video>
 
     <script>
         // Список ссылок на видео
         const videoLinks = [
-            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4"
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4"
         ];
 
         // Получаем ссылку на видеоплеер
@@ -38,11 +38,6 @@
 
         // Добавляем обработчик события на окончание видео
         videoPlayer.addEventListener('ended', changeVideo);
-
-        // Проверка, если видео не загружается
-        videoPlayer.onerror = function() {
-            alert('Произошла ошибка при загрузке видео.');
-        };
 
         // Начинаем воспроизведение
         videoPlayer.play();
