@@ -3,44 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Видео по кругу</title>
+    <title>Циклическое видео</title>
 </head>
 <body>
-    <h1>Видео по кругу</h1>
+    <h1>Циклическое воспроизведение видео</h1>
 
-    <!-- Видео плеер -->
-    <video id="videoPlayer" width="640" height="360" controls autoplay>
-        <source id="videoSource" src="https://www.example.com/video1.mp4" type="video/mp4">
+    <!-- Видеоплеер -->
+    <video id="videoPlayer" width="640" height="360" autoplay muted>
+        <source src="https://www.example.com/video1.mp4" type="video/mp4">
         Ваш браузер не поддерживает элемент video.
     </video>
 
     <script>
-        // Список ссылок на видео
+        // Ссылки на видео
         const videoLinks = [
-            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4", // замените на свои видео ссылки
             "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4"
         ];
 
-        // Получаем ссылку на видеоплеер
-        const videoPlayer = document.getElementById("videoPlayer");
-        const videoSource = document.getElementById("videoSource");
+        let currentIndex = 0;
 
-        let currentVideoIndex = 0;
+        const videoElement = document.getElementById("videoPlayer");
 
         // Функция для смены видео
-        function changeVideo() {
-            currentVideoIndex = (currentVideoIndex + 1) % videoLinks.length;
-            videoSource.src = videoLinks[currentVideoIndex];
-            videoPlayer.load(); // Загрузка нового видео
-            videoPlayer.play(); // Начало воспроизведения
+        function playNextVideo() {
+            // Устанавливаем новое видео
+            videoElement.src = videoLinks[currentIndex];
+            videoElement.load();
+            videoElement.play();
+
+            // Переход к следующему видео в списке
+            currentIndex = (currentIndex + 1) % videoLinks.length; // по кругу
         }
 
-        // Добавляем обработчик события на окончание видео
-        videoPlayer.addEventListener('ended', changeVideo);
+        // Слушаем событие окончания видео и запускаем следующее
+        videoElement.addEventListener("ended", playNextVideo);
 
-        // Начинаем воспроизведение
-        videoPlayer.play();
+        // Начать воспроизведение первого видео сразу при загрузке
+        playNextVideo();
     </script>
 </body>
 </html>
