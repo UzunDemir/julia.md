@@ -66,6 +66,15 @@
             right: 10px;
         }
 
+        /* Позиционирование логотипа */
+        .logo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 20;
+            width: 150px;  /* Размер логотипа, можно настроить */
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -75,6 +84,9 @@
 </head>
 <body>
     <div class="video-container">
+        <!-- Логотип в левом верхнем углу -->
+        <img src="https://github.com/UzunDemir/julia.md/blob/main/jul_new-removebg-preview.png?raw=true" alt="Логотип" class="logo">
+
         <video id="videoPlayer" autoplay muted loop>
             <source src="https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4" type="video/mp4">
             Ваш браузер не поддерживает тег video.
