@@ -8,6 +8,7 @@
 <body>
     <h1>Видео по кругу</h1>
 
+    <!-- Видео плеер -->
     <video id="videoPlayer" width="640" height="360" controls autoplay>
         <source id="videoSource" src="video1.mp4" type="video/mp4">
         Ваш браузер не поддерживает элемент video.
@@ -16,9 +17,9 @@
     <script>
         // Список ссылок на видео
         const videoLinks = [
-            "https://www.youtube.com/watch?v=I74PbZLo9Ro",
-            "https://www.youtube.com/watch?v=I74PbZLo9Ro",
-            "https://www.youtube.com/watch?v=I74PbZLo9Ro"
+            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4"
         ];
 
         // Получаем ссылку на видеоплеер
@@ -31,12 +32,17 @@
         function changeVideo() {
             currentVideoIndex = (currentVideoIndex + 1) % videoLinks.length;
             videoSource.src = videoLinks[currentVideoIndex];
-            videoPlayer.load();
-            videoPlayer.play();
+            videoPlayer.load(); // Загрузка нового видео
+            videoPlayer.play(); // Начало воспроизведения
         }
 
         // Добавляем обработчик события на окончание видео
         videoPlayer.addEventListener('ended', changeVideo);
+
+        // Проверка, если видео не загружается
+        videoPlayer.onerror = function() {
+            alert('Произошла ошибка при загрузке видео.');
+        };
 
         // Начинаем воспроизведение
         videoPlayer.play();
