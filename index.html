@@ -1,39 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мессенджер</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новые поступления в julia.md !!!</title>
+    <!-- Подключаем иконки Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Стиль для контейнера, в котором будет отображаться видео */
+        .video-container {
+            width: 95%;  /* Ширина контейнера будет 100% от доступного пространства */
+            height: 90vh; /* Высота контейнера будет равна высоте экрана */
+            overflow: hidden;
+            position: relative;
+            background-color: black;
+            border: 7px solid #ff6600; /* Интенсивный оранжевый цвет */
+            border-radius: 20px; /* Закругление углов */
+        }
+
+        /* Стиль для видео */
+        video {
+            width: 100%; /* Ширина видео будет 100% от контейнера */
+            height: 100%; /* Высота видео будет 100% от контейнера */
+            object-fit: cover; /* Масштабирование видео с сохранением пропорций */
+        }
+
+        /* Стиль для панели управления */
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: auto;
+        }
+
+        /* Стиль для кнопок управления */
+        .control-button {
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Стиль для ползунка громкости */
+        .volume-slider {
+            margin-left: 10px;
+            width: 100px;
+        }
+
+        /* Позиционирование кнопки на весь экран в правом нижнем углу */
+        #fullscreenBtn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        /* Позиционирование логотипа */
+        .logo {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            z-index: 20;
+            width: 150px;  /* Размер логотипа, можно настроить */
+        }
+
+        /* Мобильная адаптивность */
+        @media (max-width: 767px) {
+            .logo {
+                width: 100px;  /* Уменьшение размера логотипа */
+            }
+
+            .control-button {
+                font-size: 16px;  /* Уменьшение размера кнопок */
+                padding: 8px;
+            }
+
+            .volume-slider {
+                width: 80px; /* Уменьшение размера ползунка */
+            }
+        }
+
+        /* Для планшетов */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .control-button {
+                font-size: 18px;  /* Уменьшение размера кнопок */
+                padding: 9px;
+            }
+
+            .volume-slider {
+                width: 90px; /* Уменьшение размера ползунка */
+            }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+    </style>
 </head>
 <body>
-  <div id="container">
-    <!-- Значок телефона -->
-    <div id="call-icon">
-      📞
+    <div class="video-container">
+        <!-- Логотип в левом верхнем углу -->
+        <img src="https://github.com/UzunDemir/julia.md/blob/main/jul24-removebg-preview.png?raw=true" alt="Логотип" class="logo">
+
+        <video id="videoPlayer" autoplay muted loop>
+            <source src="https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4" type="video/mp4">
+            Ваш браузер не поддерживает тег video.
+        </video>
+
+        <!-- Панель управления (левая часть) -->
+        <div class="controls">
+            <!-- Кнопка для остановки видео -->
+            <button id="stopBtn" class="control-button"><i class="fas fa-stop"></i></button>
+
+            <!-- Кнопка для воспроизведения -->
+            <button id="playBtn" class="control-button"><i class="fas fa-play"></i></button>
+
+            <!-- Кнопка для паузы -->
+            <button id="pauseBtn" class="control-button"><i class="fas fa-pause"></i></button>
+
+            <!-- Кнопка для отключения звука -->
+            <button id="muteBtn" class="control-button"><i class="fas fa-volume-mute"></i></button>
+
+            <!-- Ползунок громкости -->
+            <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+
+        <!-- Кнопка для развертывания на весь экран (правая часть) -->
+        <button id="fullscreenBtn" class="control-button"><i class="fas fa-expand"></i></button>
     </div>
 
-    <!-- Видеоплееры -->
-    <div id="video-container">
-      <!-- Основное видео (видеозвонок) -->
-      <iframe 
-        id="main-video" 
-        src="https://www.youtube.com/embed/VIDEO_ID_1?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID_1" 
-        frameborder="0" 
-        allow="autoplay; encrypted-media" 
-        allowfullscreen>
-      </iframe>
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const stopBtn = document.getElementById('stopBtn');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeControl = document.getElementById('volumeControl');
+        const videoLinks = [
+            "https://goods-vod.kwcdn.com/goods-video/18e526c8d03123f14de2cbd14066eb53e487e856.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/78c584d27c0c09d69ac0e6096300725d6b722083.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/d614ab17e6b2614810d68e8baf213795e67e1552.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/7b2568737f66980b2bb824c582d5c7d3e39987ed.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/a779290f1a63d6d8529ba5436d0bc18b3b5fa851.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/deb146e16e55d2371c04aa6fd7d7954a048eb3a7.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/8ba1cd8c80f9fdef8d7a2881c2948dba353edae5.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/4a9ad63a73a3ab1dfec2a5a16cbf8efad208f40a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/b5c350755d8daefd2245e0ff869abc50642b7fdc.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/278bc9a88c335a83ea1000b18d6c739a945843ff.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/3723acba1dc743437a2fb2ec4f738a3bc07b8cf2.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/65c40fad811037838fb019ddd895a8d4084dee2a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/a02f7e3c2aa85a6314472b2402e9bd0a76b95717.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/ead365c237383b4d7909ca0bebd214c1c8cacdaf.f30.mp4"
+        ];
+        let currentIndex = 0;
 
-      <!-- Угловое видео (реклама) -->
-      <iframe 
-        id="corner-video" 
-        src="https://www.youtube.com/embed/VIDEO_ID_2?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID_2" 
-        frameborder="0" 
-        allow="autoplay; encrypted-media" 
-        allowfullscreen>
-      </iframe>
-    </div>
-  </div>
-  <script src="script.js"></script>
+        // Функция для смены видео
+        function changeVideo() {
+            currentIndex = (currentIndex + 1) % videoLinks.length;
+            videoPlayer.src = videoLinks[currentIndex];
+            videoPlayer.load();
+            videoPlayer.play();
+        }
+
+        // Изменить видео каждые 10 секунд
+        setInterval(changeVideo, 10000);
+
+        // Обработчик для кнопки полноэкранного режима
+        fullscreenBtn.addEventListener('click', function() {
+            if (videoPlayer.requestFullscreen) {
+                videoPlayer.requestFullscreen();
+            } else if (videoPlayer.mozRequestFullScreen) {
+                videoPlayer.mozRequestFullScreen();
+            } else if (videoPlayer.webkitRequestFullscreen) {
+                videoPlayer.webkitRequestFullscreen();
+            }
+        });
+
+        // Обработчики для кнопок управления видео
+        playBtn.addEventListener('click', () => videoPlayer.play());
+        pauseBtn.addEventListener('click', () => videoPlayer.pause());
+        stopBtn.addEventListener('click', () => {
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0;
+        });
+
+        // Мутирование и регулировка громкости
+        muteBtn.addEventListener('click', () => {
+            videoPlayer.muted = !videoPlayer.muted;
+        });
+        volumeControl.addEventListener('input', () => {
+            videoPlayer.volume = volumeControl.value;
+        });
+    </script>
 </body>
 </html>
