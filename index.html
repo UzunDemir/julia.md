@@ -9,13 +9,13 @@
     <style>
         /* Стиль для контейнера, в котором будет отображаться видео */
         .video-container {
-            width: 800px;  /* Фиксированная ширина контейнера */
-            height: 450px; /* Фиксированная высота */
+            width: 98%;  /* Ширина контейнера будет 100% от доступного пространства */
+            height: 100vh; /* Высота контейнера будет равна высоте экрана */
             overflow: hidden;
             position: relative;
-            margin: 0 auto; /* Центрирование по горизонтали */
             background-color: black;
-            border: 5px solid orange;
+            border: 7px solid #ff6600; /* Интенсивный оранжевый цвет */
+            border-radius: 20px; /* Закругление углов */
         }
 
         /* Стиль для видео */
@@ -76,6 +76,34 @@
             width: 150px;  /* Размер логотипа, можно настроить */
         }
 
+        /* Мобильная адаптивность */
+        @media (max-width: 767px) {
+            .logo {
+                width: 100px;  /* Уменьшение размера логотипа */
+            }
+
+            .control-button {
+                font-size: 16px;  /* Уменьшение размера кнопок */
+                padding: 8px;
+            }
+
+            .volume-slider {
+                width: 80px; /* Уменьшение размера ползунка */
+            }
+        }
+
+        /* Для планшетов */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .control-button {
+                font-size: 18px;  /* Уменьшение размера кнопок */
+                padding: 9px;
+            }
+
+            .volume-slider {
+                width: 90px; /* Уменьшение размера ползунка */
+            }
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -126,7 +154,6 @@
         const videoLinks = [
             "https://goods-vod.kwcdn.com/goods-video/deb146e16e55d2371c04aa6fd7d7954a048eb3a7.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/8ba1cd8c80f9fdef8d7a2881c2948dba353edae5.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/8ba1cd8c80f9fdef8d7a2881c2948dba353edae5.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/4a9ad63a73a3ab1dfec2a5a16cbf8efad208f40a.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/b5c350755d8daefd2245e0ff869abc50642b7fdc.f30.mp4",
             "https://goods-vod.kwcdn.com/goods-video/278bc9a88c335a83ea1000b18d6c739a945843ff.f30.mp4",
@@ -155,44 +182,26 @@
         fullscreenBtn.addEventListener('click', function() {
             if (videoPlayer.requestFullscreen) {
                 videoPlayer.requestFullscreen();
-            } else if (videoPlayer.mozRequestFullScreen) { // Для Firefox
+            } else if (videoPlayer.mozRequestFullScreen) {
                 videoPlayer.mozRequestFullScreen();
-            } else if (videoPlayer.webkitRequestFullscreen) { // Для Chrome и Safari
+            } else if (videoPlayer.webkitRequestFullscreen) {
                 videoPlayer.webkitRequestFullscreen();
-            } else if (videoPlayer.msRequestFullscreen) { // Для IE/Edge
-                videoPlayer.msRequestFullscreen();
             }
         });
 
-        // Обработчик для кнопки стопа
-        stopBtn.addEventListener('click', function() {
+        // Обработчики для кнопок управления видео
+        playBtn.addEventListener('click', () => videoPlayer.play());
+        pauseBtn.addEventListener('click', () => videoPlayer.pause());
+        stopBtn.addEventListener('click', () => {
             videoPlayer.pause();
-            videoPlayer.currentTime = 0;  // Сбросить видео в начало
+            videoPlayer.currentTime = 0;
         });
 
-        // Обработчик для кнопки воспроизведения
-        playBtn.addEventListener('click', function() {
-            videoPlayer.play();
+        // Мутирование и регулировка громкости
+        muteBtn.addEventListener('click', () => {
+            videoPlayer.muted = !videoPlayer.muted;
         });
-
-        // Обработчик для кнопки паузы
-        pauseBtn.addEventListener('click', function() {
-            videoPlayer.pause();
-        });
-
-        // Обработчик для кнопки выключения звука
-        muteBtn.addEventListener('click', function() {
-            if (videoPlayer.muted) {
-                videoPlayer.muted = false;
-                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-            } else {
-                videoPlayer.muted = true;
-                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
-            }
-        });
-
-        // Обработчик для регулировки громкости
-        volumeControl.addEventListener('input', function() {
+        volumeControl.addEventListener('input', () => {
             videoPlayer.volume = volumeControl.value;
         });
     </script>
