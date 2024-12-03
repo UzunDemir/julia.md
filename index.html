@@ -89,7 +89,7 @@
         }
 
         .control-button {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(255, 102, 0, 0.7); /* Оранжевая стилизация */
             border: none;
             color: white;
             padding: 10px;
@@ -101,18 +101,12 @@
         }
 
         .control-button:hover {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(255, 102, 0, 0.9);
         }
 
         .volume-slider {
             margin-left: 10px;
             width: 100px;
-        }
-
-        #fullscreenBtn {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
         }
     </style>
 </head>
@@ -146,9 +140,6 @@
             <button id="muteBtn" class="control-button"><i class="fas fa-volume-mute"></i></button>
             <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
         </div>
-
-        <!-- Кнопка для полноэкранного режима -->
-        <button id="fullscreenBtn" class="control-button"><i class="fas fa-expand"></i></button>
     </div>
 
     <script>
@@ -162,7 +153,6 @@
         const pauseBtn = document.getElementById('pauseBtn');
         const muteBtn = document.getElementById('muteBtn');
         const volumeControl = document.getElementById('volumeControl');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
 
         let isInitialVideo = true;
 
@@ -192,14 +182,6 @@
         muteBtn.addEventListener('click', () => videoPlayer.muted = !videoPlayer.muted);
         volumeControl.addEventListener('input', () => videoPlayer.volume = volumeControl.value);
 
-        fullscreenBtn.addEventListener('click', () => {
-            if (videoPlayer.requestFullscreen) {
-                videoPlayer.requestFullscreen();
-            } else if (videoPlayer.webkitRequestFullscreen) {
-                videoPlayer.webkitRequestFullscreen();
-            }
-        });
-
         // Основное видео переключение через 10 секунд
         const videoLinks = [
             "https://goods-vod.kwcdn.com/goods-video/deb146e16e55d2371c04aa6fd7d7954a048eb3a7.f30.mp4",
@@ -218,12 +200,11 @@
 
         ];
 
-        let videoIndex = 0;
         setInterval(() => {
-            videoIndex = (videoIndex + 1) % videoLinks.length;
-            videoPlayer.src = videoLinks[videoIndex];
+            const randomIndex = Math.floor(Math.random() * videoLinks.length);
+            videoPlayer.src = videoLinks[randomIndex];
             videoPlayer.play();
-        }, 10000);
+        }, 10000);  // Переключение видео каждые 10 секунд
     </script>
 </body>
 </html>
