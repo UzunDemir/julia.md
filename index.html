@@ -222,16 +222,48 @@
 
         // let lastIndex = -1;
 
-        setInterval(() => {
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * videoLinks.length);
-            } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
+        // setInterval(() => {
+        //     let randomIndex;
+        //     do {
+        //         randomIndex = Math.floor(Math.random() * videoLinks.length);
+        //     } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
         
-            lastIndex = randomIndex;
-            videoPlayer.src = videoLinks[randomIndex];
-            videoPlayer.play();
+        //     lastIndex = randomIndex;
+        //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.play();
+        // }, 10000);
+
+          function shuffle(array) {
+          // Перемешивание массива (Fisher-Yates shuffle)
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+        }
+        
+        let shuffledIndexes = [];
+        let currentIndex = 0;
+        
+        function resetShuffle() {
+          shuffledIndexes = videoLinks.map((_, i) => i); // [0,1,2,...]
+          shuffle(shuffledIndexes);
+          currentIndex = 0;
+        }
+        
+        // Инициализация
+        resetShuffle();
+        
+        setInterval(() => {
+          if (currentIndex >= shuffledIndexes.length) {
+            resetShuffle(); // Перемешиваем заново, когда дошли до конца
+          }
+        
+          const index = shuffledIndexes[currentIndex];
+          videoPlayer.src = videoLinks[index];
+          videoPlayer.play();
+          currentIndex++;
         }, 10000);
+
 
 
 
