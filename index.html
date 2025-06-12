@@ -10,15 +10,16 @@
             margin: 0;
             padding: 0;
             background: #000;
+            font-family: Arial, sans-serif;
         }
 
-        /* Черный экран с пульсирующей кнопкой */
         #initialScreen {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             background: #000;
+            flex-direction: column;
         }
 
         .pulse-button {
@@ -33,21 +34,22 @@
             color: white;
             animation: pulse 1.5s infinite ease-in-out;
             cursor: pointer;
+            margin-bottom: 20px;
         }
 
         @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
 
-        /* Основное видео и логотип видео */
+        .loading-text {
+            color: #ff6600;
+            font-size: 18px;
+            margin-top: 20px;
+            display: none;
+        }
+
         .video-container {
             width: 95%;
             height: 90vh;
@@ -86,6 +88,11 @@
             width: 120px;
             height: auto;
             z-index: 20;
+            transition: transform 0.3s;
+        }
+
+        #centerLogo:hover {
+            transform: translateX(-50%) scale(1.1);
         }
 
         .controls {
@@ -95,7 +102,9 @@
             z-index: 10;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            border-radius: 5px;
         }
 
         .control-button {
@@ -107,196 +116,347 @@
             font-size: 20px;
             border-radius: 5px;
             margin: 0 5px;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .control-button:hover {
             background: rgba(255, 102, 0, 0.9);
+            transform: scale(1.1);
         }
 
         .volume-slider {
             margin-left: 10px;
             width: 100px;
+            cursor: pointer;
+        }
+
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            background: rgba(255, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 30;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <!-- Экран с кнопкой -->
     <div id="initialScreen">
         <div class="pulse-button" id="callButton">
             <i class="fas fa-phone-alt"></i>
         </div>
+        <div class="loading-text" id="loadingText">Загрузка видео...</div>
     </div>
 
-    <!-- Видео-контейнер -->
     <div class="video-container" id="videoContainer">
-        <!-- Угловое видео -->
         <video autoplay muted id="logoVideo">
             <source src="https://files.catbox.moe/n5dpni.mp4" type="video/mp4">
-            Ваш браузер не поддерживает тег video.
         </video>
 
-        <!-- Центральный логотип -->
-        <a href="http://julia.md/">
-          <img src="https://github.com/UzunDemir/julia.md/blob/main/jul2025_1.png?raw=true" alt="Центральный логотип" id="centerLogo" />
+        <a href="http://julia.md/" id="logoLink">
+            <img src="https://github.com/UzunDemir/julia.md/blob/main/jul2025_1.png?raw=true" alt="Julia.md" id="centerLogo" />
         </a>
 
-        <!-- Основное видео -->
         <video id="videoPlayer" autoplay muted loop>
             <source src="https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4" type="video/mp4">
-            Ваш браузер не поддерживает тег video.
         </video>
 
-        <!-- Панель управления -->
         <div class="controls">
-            <button id="stopBtn" class="control-button"><i class="fas fa-stop"></i></button>
-            <button id="playBtn" class="control-button"><i class="fas fa-play"></i></button>
-            <button id="pauseBtn" class="control-button"><i class="fas fa-pause"></i></button>
-            <button id="muteBtn" class="control-button"><i class="fas fa-volume-mute"></i></button>
-            <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+            <button id="stopBtn" class="control-button" title="Стоп"><i class="fas fa-stop"></i></button>
+            <button id="playBtn" class="control-button" title="Воспроизвести"><i class="fas fa-play"></i></button>
+            <button id="pauseBtn" class="control-button" title="Пауза"><i class="fas fa-pause"></i></button>
+            <button id="muteBtn" class="control-button" title="Звук"><i class="fas fa-volume-up"></i></button>
+            <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5" title="Громкость">
         </div>
+
+        <div class="error-message" id="errorMessage"></div>
     </div>
 
     <script>
-        const callButton = document.getElementById('callButton');
-        const initialScreen = document.getElementById('initialScreen');
-        const videoContainer = document.getElementById('videoContainer');
-        const logoVideo = document.getElementById('logoVideo');
-        const videoPlayer = document.getElementById('videoPlayer');
-        const stopBtn = document.getElementById('stopBtn');
-        const playBtn = document.getElementById('playBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeControl = document.getElementById('volumeControl');
+        // Элементы DOM
+        const elements = {
+            callButton: document.getElementById('callButton'),
+            initialScreen: document.getElementById('initialScreen'),
+            videoContainer: document.getElementById('videoContainer'),
+            logoVideo: document.getElementById('logoVideo'),
+            videoPlayer: document.getElementById('videoPlayer'),
+            stopBtn: document.getElementById('stopBtn'),
+            playBtn: document.getElementById('playBtn'),
+            pauseBtn: document.getElementById('pauseBtn'),
+            muteBtn: document.getElementById('muteBtn'),
+            volumeControl: document.getElementById('volumeControl'),
+            loadingText: document.getElementById('loadingText'),
+            errorMessage: document.getElementById('errorMessage')
+        };
 
-        let isInitialVideo = true;
-        let videoLinks = [];
-        let videoRotationInterval = null;
+        // Константы
+        const INITIAL_VIDEO = "https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4";
+        const SECONDARY_LOGO_VIDEO = "https://files.catbox.moe/t1qsm0.mp4";
+        const INITIAL_LOGO_VIDEO = "https://files.catbox.moe/n5dpni.mp4";
+        const ROTATION_INTERVAL = 10000; // 10 секунд
 
-        // Функция для загрузки CSV и извлечения ссылок на видео
+        // Состояние приложения
+        const state = {
+            isInitialVideo: true,
+            videoLinks: [],
+            videoRotationInterval: null,
+            isPlaying: false
+        };
+
+        // Инициализация
+        function init() {
+            setupEventListeners();
+        }
+
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            elements.callButton.addEventListener('click', startPresentation);
+            elements.logoVideo.addEventListener('ended', handleLogoVideoEnd);
+            
+            // Управление видео
+            elements.stopBtn.addEventListener('click', stopVideo);
+            elements.playBtn.addEventListener('click', playVideo);
+            elements.pauseBtn.addEventListener('click', pauseVideo);
+            elements.muteBtn.addEventListener('click', toggleMute);
+            elements.volumeControl.addEventListener('input', adjustVolume);
+            
+            // Обработка ошибок видео
+            elements.videoPlayer.addEventListener('error', handleVideoError);
+            elements.logoVideo.addEventListener('error', handleLogoVideoError);
+        }
+
+        // Запуск презентации
+        async function startPresentation() {
+            try {
+                elements.loadingText.style.display = 'block';
+                elements.callButton.style.display = 'none';
+                
+                // Сброс состояния
+                resetVideoState();
+                
+                // Загрузка видео из CSV
+                await loadVideoLinks();
+                
+                // Показ видео
+                elements.initialScreen.style.display = 'none';
+                elements.videoContainer.style.display = 'block';
+                
+                // Воспроизведение
+                playInitialVideo();
+                
+                // Через 10 секунд начинаем ротацию
+                setTimeout(startVideoRotation, ROTATION_INTERVAL);
+                
+            } catch (error) {
+                showError("Ошибка запуска: " + error.message);
+                resetToInitialState();
+            } finally {
+                elements.loadingText.style.display = 'none';
+            }
+        }
+
+        // Загрузка видео из CSV
         async function loadVideoLinks() {
             try {
                 const response = await fetch('filtered_tictactoys.csv');
+                if (!response.ok) throw new Error("Не удалось загрузить CSV");
+                
                 const csvData = await response.text();
+                const lines = csvData.split('\n').filter(line => line.trim());
                 
-                // Парсинг CSV
-                const lines = csvData.split('\n');
-                videoLinks = [];
+                if (lines.length < 2) throw new Error("CSV файл пуст или содержит только заголовки");
                 
-                // Предполагаем, что ссылки находятся в столбце "Video"
-                const header = lines[0].split(',');
-                const videoIndex = header.findIndex(col => col.trim() === 'Video');
+                // Парсинг заголовков
+                const headers = lines[0].split(',');
+                const videoIndex = headers.findIndex(col => col.trim().toLowerCase() === 'video');
                 
-                if (videoIndex === -1) {
-                    console.error('Столбец "Video" не найден в CSV');
-                    return;
-                }
+                if (videoIndex === -1) throw new Error("Столбец 'Video' не найден в CSV");
                 
-                // Собираем все видео-ссылки
+                // Сбор ссылок
+                state.videoLinks = [];
                 for (let i = 1; i < lines.length; i++) {
-                    if (lines[i].trim()) {
-                        const columns = lines[i].split(',');
-                        if (columns[videoIndex] && columns[videoIndex].trim()) {
-                            videoLinks.push(columns[videoIndex].trim());
+                    const columns = lines[i].split(',');
+                    if (columns[videoIndex] && columns[videoIndex].trim()) {
+                        const url = columns[videoIndex].trim();
+                        if (isValidUrl(url)) {
+                            state.videoLinks.push(url);
                         }
                     }
                 }
                 
-                console.log('Загружено видео:', videoLinks.length);
+                if (state.videoLinks.length === 0) throw new Error("Не найдено валидных видео ссылок");
                 
-                // Если есть видео, начинаем ротацию через 10 секунд
-                if (videoLinks.length > 0) {
-                    setTimeout(startVideoRotation, 10000);
-                } else {
-                    console.error('Не найдено ни одного видео в CSV');
-                }
+                console.log(`Загружено ${state.videoLinks.length} видео`);
+                
             } catch (error) {
-                console.error('Ошибка загрузки CSV:', error);
+                console.error("Ошибка загрузки видео:", error);
+                throw error;
             }
         }
 
-        // Функция для ротации видео
+        // Проверка валидности URL
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // Воспроизведение начального видео
+        function playInitialVideo() {
+            elements.videoPlayer.src = INITIAL_VIDEO;
+            elements.videoPlayer.load();
+            elements.videoPlayer.play()
+                .then(() => {
+                    state.isPlaying = true;
+                    elements.logoVideo.muted = false;
+                    elements.logoVideo.play();
+                })
+                .catch(error => {
+                    showError("Ошибка воспроизведения: " + error.message);
+                });
+        }
+
+        // Запуск ротации видео
         function startVideoRotation() {
-            // Очищаем предыдущий интервал, если он был
-            if (videoRotationInterval) {
-                clearInterval(videoRotationInterval);
+            if (state.videoLinks.length === 0) {
+                console.warn("Нет видео для ротации");
+                return;
             }
             
-            let lastIndex = -1;
+            // Очистка предыдущего интервала
+            if (state.videoRotationInterval) {
+                clearInterval(state.videoRotationInterval);
+            }
             
-            // Первое видео из CSV
+            // Первое видео из списка
             playRandomVideo();
             
-            // Интервал для смены видео
-            videoRotationInterval = setInterval(playRandomVideo, 10000);
+            // Установка интервала
+            state.videoRotationInterval = setInterval(playRandomVideo, ROTATION_INTERVAL);
+        }
+
+        // Воспроизведение случайного видео
+        function playRandomVideo() {
+            if (state.videoLinks.length === 0) return;
             
-            function playRandomVideo() {
-                if (videoLinks.length === 0) return;
-                
-                let randomIndex;
-                do {
-                    randomIndex = Math.floor(Math.random() * videoLinks.length);
-                } while (randomIndex === lastIndex && videoLinks.length > 1);
-                
-                lastIndex = randomIndex;
-                videoPlayer.src = videoLinks[randomIndex];
-                videoPlayer.load();
-                videoPlayer.play().catch(e => console.error('Ошибка воспроизведения:', e));
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * state.videoLinks.length);
+            } while (randomIndex === state.lastIndex && state.videoLinks.length > 1);
+            
+            state.lastIndex = randomIndex;
+            const nextVideo = state.videoLinks[randomIndex];
+            
+            elements.videoPlayer.src = nextVideo;
+            elements.videoPlayer.load();
+            elements.videoPlayer.play()
+                .then(() => {
+                    state.isPlaying = true;
+                })
+                .catch(error => {
+                    console.error("Ошибка воспроизведения видео:", error);
+                    // Пробуем следующее видео
+                    setTimeout(playRandomVideo, 2000);
+                });
+        }
+
+        // Обработчики событий видео
+        function handleLogoVideoEnd() {
+            if (state.isInitialVideo) {
+                elements.logoVideo.src = SECONDARY_LOGO_VIDEO;
+                elements.logoVideo.loop = true;
+                elements.logoVideo.play();
+                state.isInitialVideo = false;
             }
         }
 
-        // Управление угловым видео
-        logoVideo.addEventListener('ended', () => {
-            if (isInitialVideo) {
-                logoVideo.src = "https://files.catbox.moe/t1qsm0.mp4";
-                logoVideo.loop = true;
-                logoVideo.play();
-                isInitialVideo = false;
-            }
-        });
+        function handleVideoError() {
+            showError("Ошибка загрузки основного видео");
+        }
 
-        // При нажатии на кнопку звонка показываем видео
-        callButton.addEventListener('click', () => {
-            // Очищаем предыдущий интервал
-            if (videoRotationInterval) {
-                clearInterval(videoRotationInterval);
-                videoRotationInterval = null;
-            }
-            
-            // Устанавливаем начальное видео
-            videoPlayer.src = "https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4";
-            videoPlayer.load();
-            
-            initialScreen.style.display = 'none';
-            videoContainer.style.display = 'block';
-            videoPlayer.play().catch(e => console.error('Ошибка воспроизведения:', e));
-            logoVideo.muted = false;
-            logoVideo.play();
-            
-            // Загружаем видео из CSV
-            loadVideoLinks();
-        });
+        function handleLogoVideoError() {
+            console.error("Ошибка загрузки лого-видео");
+            elements.logoVideo.style.display = 'none';
+        }
 
-        // Управление основным видео
-        stopBtn.addEventListener('click', () => {
-            videoPlayer.pause();
-            if (videoRotationInterval) {
-                clearInterval(videoRotationInterval);
-                videoRotationInterval = null;
+        // Управление видео
+        function stopVideo() {
+            pauseVideo();
+            resetVideoState();
+            showInitialScreen();
+        }
+
+        function playVideo() {
+            if (!state.isPlaying) {
+                elements.videoPlayer.play()
+                    .then(() => state.isPlaying = true)
+                    .catch(error => showError("Ошибка воспроизведения: " + error.message));
             }
-        });
-        
-        playBtn.addEventListener('click', () => videoPlayer.play());
-        pauseBtn.addEventListener('click', () => videoPlayer.pause());
-        muteBtn.addEventListener('click', () => {
-            videoPlayer.muted = !videoPlayer.muted;
-            muteBtn.innerHTML = videoPlayer.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
-        });
-        volumeControl.addEventListener('input', () => {
-            videoPlayer.volume = volumeControl.value;
-            videoPlayer.muted = false;
-            muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        });
+        }
+
+        function pauseVideo() {
+            elements.videoPlayer.pause();
+            state.isPlaying = false;
+        }
+
+        function toggleMute() {
+            elements.videoPlayer.muted = !elements.videoPlayer.muted;
+            elements.muteBtn.innerHTML = elements.videoPlayer.muted ? 
+                '<i class="fas fa-volume-mute"></i>' : 
+                '<i class="fas fa-volume-up"></i>';
+        }
+
+        function adjustVolume() {
+            elements.videoPlayer.volume = elements.volumeControl.value;
+            elements.videoPlayer.muted = false;
+            elements.muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        }
+
+        // Вспомогательные функции
+        function resetVideoState() {
+            if (state.videoRotationInterval) {
+                clearInterval(state.videoRotationInterval);
+                state.videoRotationInterval = null;
+            }
+            
+            state.isInitialVideo = true;
+            state.isPlaying = false;
+            elements.logoVideo.src = INITIAL_LOGO_VIDEO;
+            elements.logoVideo.loop = false;
+            elements.videoPlayer.src = INITIAL_VIDEO;
+            hideError();
+        }
+
+        function showInitialScreen() {
+            elements.videoContainer.style.display = 'none';
+            elements.initialScreen.style.display = 'flex';
+            elements.callButton.style.display = 'flex';
+        }
+
+        function showError(message) {
+            elements.errorMessage.textContent = message;
+            elements.errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            elements.errorMessage.style.display = 'none';
+        }
+
+        function resetToInitialState() {
+            resetVideoState();
+            showInitialScreen();
+        }
+
+        // Запуск приложения
+        init();
     </script>
 </body>
 </html>
