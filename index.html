@@ -78,7 +78,20 @@
             object-fit: cover;
         }
 
-        <img src="https://github.com/UzunDemir/julia.md/blob/main/jul2025_1.png" alt="Центральный логотип" id="centerLogo" />
+        #centerLogo {
+            position: absolute;
+            top: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px; /* можно подкорректировать размер */
+            height: auto;
+            z-index: 20; /* чуть выше, чем у #logoVideo */
+            border: 3px solid #ff6600;
+            border-radius: 10px;
+            object-fit: contain;
+            background-color: black; /* по желанию */
+        }
+
 
 
         .controls {
@@ -128,6 +141,9 @@
             <source src="https://files.catbox.moe/n5dpni.mp4" type="video/mp4">
             Ваш браузер не поддерживает тег video.
         </video>
+
+        <!-- Центральный логотип -->
+        <img src="https://github.com/UzunDemir/julia.md/blob/main/jul2025_1.png" alt="Центральный логотип" id="centerLogo" />
 
         <!-- Основное видео -->
         <video id="videoPlayer" autoplay muted loop>
