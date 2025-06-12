@@ -171,6 +171,7 @@
 
         let isInitialVideo = true;
         let videoLinks = [];
+        let videoRotationInterval = null;
 
         // Функция для загрузки CSV и извлечения ссылок на видео
         async function loadVideoLinks() {
@@ -203,9 +204,9 @@
                 
                 console.log('Загружено видео:', videoLinks.length);
                 
-                // Если есть видео, начинаем воспроизведение
+                // Если есть видео, начинаем ротацию через 10 секунд
                 if (videoLinks.length > 0) {
-                    startVideoRotation();
+                    setTimeout(startVideoRotation, 10000);
                 } else {
                     console.error('Не найдено ни одного видео в CSV');
                 }
@@ -216,13 +217,18 @@
 
         // Функция для ротации видео
         function startVideoRotation() {
+            // Очищаем предыдущий интервал, если он был
+            if (videoRotationInterval) {
+                clearInterval(videoRotationInterval);
+            }
+            
             let lastIndex = -1;
             
-            // Первое видео
+            // Первое видео из CSV
             playRandomVideo();
             
             // Интервал для смены видео
-            setInterval(playRandomVideo, 10000);
+            videoRotationInterval = setInterval(playRandomVideo, 10000);
             
             function playRandomVideo() {
                 if (videoLinks.length === 0) return;
@@ -251,9 +257,19 @@
 
         // При нажатии на кнопку звонка показываем видео
         callButton.addEventListener('click', () => {
+            // Очищаем предыдущий интервал
+            if (videoRotationInterval) {
+                clearInterval(videoRotationInterval);
+                videoRotationInterval = null;
+            }
+            
+            // Устанавливаем начальное видео
+            videoPlayer.src = "https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4";
+            videoPlayer.load();
+            
             initialScreen.style.display = 'none';
             videoContainer.style.display = 'block';
-            videoPlayer.play();
+            videoPlayer.play().catch(e => console.error('Ошибка воспроизведения:', e));
             logoVideo.muted = false;
             logoVideo.play();
             
@@ -262,7 +278,14 @@
         });
 
         // Управление основным видео
-        stopBtn.addEventListener('click', () => videoPlayer.pause());
+        stopBtn.addEventListener('click', () => {
+            videoPlayer.pause();
+            if (videoRotationInterval) {
+                clearInterval(videoRotationInterval);
+                videoRotationInterval = null;
+            }
+        });
+        
         playBtn.addEventListener('click', () => videoPlayer.play());
         pauseBtn.addEventListener('click', () => videoPlayer.pause());
         muteBtn.addEventListener('click', () => {
