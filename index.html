@@ -233,11 +233,11 @@
 
         
 
-        // setInterval(() => {
-        //     const randomIndex = Math.floor(Math.random() * videoLinks.length);
-        //     videoPlayer.src = videoLinks[randomIndex];
-        //     videoPlayer.play();
-        // }, 10000);  // Переключение видео каждые 10 секунд
+        setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * videoLinks.length);
+            videoPlayer.src = videoLinks[randomIndex];
+            videoPlayer.play();
+        }, 10000);  // Переключение видео каждые 10 секунд
 
         // let lastIndex = -1;
 
@@ -253,18 +253,18 @@
         // }, 10000);
 
         
-        let lastIndex = -1;
-        setInterval(() => {
-            let randomIndex;
-            do {
-                randomIndex = Math.floor(Math.random() * videoLinks.length);
-            } while (randomIndex === lastIndex);
+        // let lastIndex = -1;
+        // setInterval(() => {
+        //     let randomIndex;
+        //     do {
+        //         randomIndex = Math.floor(Math.random() * videoLinks.length);
+        //     } while (randomIndex === lastIndex);
         
-            lastIndex = randomIndex;
-            videoPlayer.src = videoLinks[randomIndex];
-            videoPlayer.load();      // Заставляем видео загрузиться
-            videoPlayer.play();      // Запускаем воспроизведение
-        }, 10000);
+        //     lastIndex = randomIndex;
+        //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.load();      // Заставляем видео загрузиться
+        //     videoPlayer.play();      // Запускаем воспроизведение
+        // }, 10000);
 
 
 
