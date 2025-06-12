@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новые поступления в julia.md !!!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
+
+        /* Черный экран с пульсирующей кнопкой */
+        #initialScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #000;
+        }
+
+        .pulse-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ff6600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            animation: pulse 1.5s infinite ease-in-out;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Основное видео и логотип видео */
+        .video-container {
+            width: 95%;
+            height: 90vh;
+            overflow: hidden;
+            position: relative;
+            background-color: black;
+            border: 7px solid #ff6600;
+            border-radius: 20px;
+            margin: 20px auto;
+            display: none;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #logoVideo {
+            position: absolute;
+            top: 2%;
+            right: 10px;
+            width: 80px;
+            height: 160px;
+            z-index: 15;
+            border: 3px solid #ff6600;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        #centerLogo {
+            position: absolute;
+            top: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px; /* можно подкорректировать размер */
+            height: auto;
+            z-index: 20; /* чуть выше, чем у #logoVideo */
+            /*border: 3px solid #ff6600;
+            border-radius: 10px;
+            object-fit: contain;
+            /*background-color: black; /* по желанию */
+        }
+
+
+
+        .controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-button {
+            background: rgba(255, 102, 0, 0.7); /* Оранжевая стилизация */
+            border: none;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 102, 0, 0.9);
+        }
+
+        .volume-slider {
+            margin-left: 10px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Экран с кнопкой -->
+    <div id="initialScreen">
+        <div class="pulse-button" id="callButton">
+            <i class="fas fa-phone-alt"></i>
+        </div>
+    </div>
+
+    <!-- Видео-контейнер -->
+    <div class="video-container" id="videoContainer">
+        <!-- Угловое видео -->
+        <video autoplay muted id="logoVideo">
+            <source src="https://files.catbox.moe/n5dpni.mp4" type="video/mp4">
+            Ваш браузер не поддерживает тег video.
+        </video>
+
+        <!-- Центральный логотип -->
+        <a href="http://julia.md/">
+          <img src="https://github.com/UzunDemir/julia.md/blob/main/jul2025_1.png?raw=true" alt="Центральный логотип" id="centerLogo" />
+        </a>
+
+
+        <!-- Основное видео -->
+        <video id="videoPlayer" autoplay muted loop>
+            <source src="https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4" type="video/mp4">
+            Ваш браузер не поддерживает тег video.
+        </video>
+
+        <!-- Панель управления -->
+        <div class="controls">
+            <button id="stopBtn" class="control-button"><i class="fas fa-stop"></i></button>
+            <button id="playBtn" class="control-button"><i class="fas fa-play"></i></button>
+            <button id="pauseBtn" class="control-button"><i class="fas fa-pause"></i></button>
+            <button id="muteBtn" class="control-button"><i class="fas fa-volume-mute"></i></button>
+            <input type="range" id="volumeControl" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+    </div>
+
+    <script>
+        const callButton = document.getElementById('callButton');
+        const initialScreen = document.getElementById('initialScreen');
+        const videoContainer = document.getElementById('videoContainer');
+        const logoVideo = document.getElementById('logoVideo');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const stopBtn = document.getElementById('stopBtn');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeControl = document.getElementById('volumeControl');
+
+        let isInitialVideo = true;
+
+        // Управление угловым видео
+        logoVideo.addEventListener('ended', () => {
+            if (isInitialVideo) {
+                logoVideo.src = "https://files.catbox.moe/t1qsm0.mp4";
+                logoVideo.loop = true;
+                logoVideo.play();
+                isInitialVideo = false;
+            }
+        });
+
+        // При нажатии на кнопку звонка показываем видео
+        callButton.addEventListener('click', () => {
+            initialScreen.style.display = 'none';  // Скрыть экран с кнопкой
+            videoContainer.style.display = 'block';  // Показать контейнер с видео
+            videoPlayer.play();
+            logoVideo.muted = false;  // Включить звук для логотипа
+            logoVideo.play();
+        });
+
+        // Управление основным видео
+        stopBtn.addEventListener('click', () => videoPlayer.pause());
+        playBtn.addEventListener('click', () => videoPlayer.play());
+        pauseBtn.addEventListener('click', () => videoPlayer.pause());
+        muteBtn.addEventListener('click', () => videoPlayer.muted = !videoPlayer.muted);
+        volumeControl.addEventListener('input', () => videoPlayer.volume = volumeControl.value);
+
+        // Основное видео переключение через 10 секунд
+        const videoLinks = [
+            "https://goods-vod.kwcdn.com/goods-video/4cb719ca66147118a93c1cf31f28539cc2f4bb81.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/4579cb89a89983e978610b339da051ba10861b97.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/09eeb951ffe89af089937e71ca092861db3d8654.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/f7eda1536d4a2df482e66679ca816968e6920cbc.f30.mp4",
+            // "https://goods-vod.kwcdn.com/goods-video/3a3b4f1cbf66827bd980730924825635eb1ba8d3.f30.mp4",
+            //"https://goods-vod.kwcdn.com/goods-video/e8f5b75573f25532a4b9714de7eeb6a5e233c199.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/b2f01491bc5bab8b28307e01e8b41e5631b45da0.f30.mp4",
+            //"https://goods-vod.kwcdn.com/goods-video/deb146e16e55d2371c04aa6fd7d7954a048eb3a7.f30.mp4",
+            //"https://goods-vod.kwcdn.com/goods-video/8ba1cd8c80f9fdef8d7a2881c2948dba353edae5.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/4a9ad63a73a3ab1dfec2a5a16cbf8efad208f40a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/b5c350755d8daefd2245e0ff869abc50642b7fdc.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/278bc9a88c335a83ea1000b18d6c739a945843ff.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/3723acba1dc743437a2fb2ec4f738a3bc07b8cf2.f30.mp4",
+            //"https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
+            //"https://goods-vod.kwcdn.com/goods-video/65c40fad811037838fb019ddd895a8d4084dee2a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/a02f7e3c2aa85a6314472b2402e9bd0a76b95717.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/ead365c237383b4d7909ca0bebd214c1c8cacdaf.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/18e526c8d03123f14de2cbd14066eb53e487e856.f30.mp4",
+            //"https://goods-vod.kwcdn.com/goods-video/784199174c99135555a898492b2781b58e28e3eb.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/049ad51e09410cd9c0907ee331e6da7c97ffc11a.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/ef6c50fb6351a82c003281d0066b812e037b3635.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/c24c18d4a81af13e2b49d3dfbaf657849bb2c61c.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/3bcbc03c8a280f66afbc222b2111ee1ebf3ef4d1.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/d7003bd392e599188be4f8235224c5ed79c0fc41.f30.mp4",
+            "https://goods-vod.kwcdn.com/goods-video/a3de99cfe5f738368649e9a58b6cad740770a335.f30.mp4"
+        ];
+
+
+
+        
+
+        // setInterval(() => {
+        //     const randomIndex = Math.floor(Math.random() * videoLinks.length);
+        //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.play();
+        // }, 10000);  // Переключение видео каждые 10 секунд
+
+        // let lastIndex = -1;
+
+        // setInterval(() => {
+        //     let randomIndex;
+        //     do {
+        //         randomIndex = Math.floor(Math.random() * videoLinks.length);
+        //     } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
+        
+        //     lastIndex = randomIndex;
+        //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.play();
+        // }, 10000);
+
+        let lastIndex = -1;
+        setInterval(() => {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * videoLinks.length);
+            } while (randomIndex === lastIndex);
+            
+            lastIndex = randomIndex;
+            videoPlayer.src = videoLinks[randomIndex];
+            videoPlayer.load();
+            videoPlayer.play();
+        }, 10000);
+        
+        
+        
+    </script>
+</body>
+</html>
