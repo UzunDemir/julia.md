@@ -143,6 +143,52 @@
             z-index: 30;
             text-align: center;
         }
+
+        .price-container {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(255, 102, 0, 0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .price-container.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .price-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .buy-button {
+            background: white;
+            color: #ff6600;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .buy-button:hover {
+            background: #f0f0f0;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -165,6 +211,11 @@
         <video id="videoPlayer" autoplay muted loop>
             <source src="https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4" type="video/mp4">
         </video>
+
+        <div class="price-container" id="priceContainer">
+            <div class="price-value" id="priceValue">0 MDL</div>
+            <button class="buy-button">Купить!</button>
+        </div>
 
         <div class="controls">
             <button id="stopBtn" class="control-button" title="Стоп"><i class="fas fa-stop"></i></button>
@@ -191,7 +242,9 @@
             muteBtn: document.getElementById('muteBtn'),
             volumeControl: document.getElementById('volumeControl'),
             loadingText: document.getElementById('loadingText'),
-            errorMessage: document.getElementById('errorMessage')
+            errorMessage: document.getElementById('errorMessage'),
+            priceContainer: document.getElementById('priceContainer'),
+            priceValue: document.getElementById('priceValue')
         };
 
         // Константы
@@ -203,9 +256,10 @@
         // Состояние приложения
         const state = {
             isInitialVideo: true,
-            videoLinks: [],
+            videoData: [], // Теперь храним не только ссылки, но и цены
             videoRotationInterval: null,
-            isPlaying: false
+            isPlaying: false,
+            currentVideoIndex: -1
         };
 
         // Инициализация
@@ -239,8 +293,8 @@
                 // Сброс состояния
                 resetVideoState();
                 
-                // Загрузка видео из CSV
-                await loadVideoLinks();
+                // Загрузка данных из CSV
+                await loadVideoData();
                 
                 // Показ видео
                 elements.initialScreen.style.display = 'none';
@@ -260,8 +314,8 @@
             }
         }
 
-        // Загрузка видео из CSV
-        async function loadVideoLinks() {
+        // Загрузка данных из CSV
+        async function loadVideoData() {
             try {
                 const response = await fetch('filtered_tictactoys.csv');
                 if (!response.ok) throw new Error("Не удалось загрузить CSV");
@@ -272,29 +326,36 @@
                 if (lines.length < 2) throw new Error("CSV файл пуст или содержит только заголовки");
                 
                 // Парсинг заголовков
-                const headers = lines[0].split(',');
-                const videoIndex = headers.findIndex(col => col.trim().toLowerCase() === 'video');
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                const videoIndex = headers.findIndex(col => col === 'video');
+                const priceIndex = headers.findIndex(col => col === 'price');
                 
                 if (videoIndex === -1) throw new Error("Столбец 'Video' не найден в CSV");
+                if (priceIndex === -1) throw new Error("Столбец 'Price' не найден в CSV");
                 
-                // Сбор ссылок
-                state.videoLinks = [];
+                // Сбор данных
+                state.videoData = [];
                 for (let i = 1; i < lines.length; i++) {
                     const columns = lines[i].split(',');
                     if (columns[videoIndex] && columns[videoIndex].trim()) {
                         const url = columns[videoIndex].trim();
+                        const price = columns[priceIndex] ? columns[priceIndex].trim() : "N/A";
+                        
                         if (isValidUrl(url)) {
-                            state.videoLinks.push(url);
+                            state.videoData.push({
+                                url: url,
+                                price: price
+                            });
                         }
                     }
                 }
                 
-                if (state.videoLinks.length === 0) throw new Error("Не найдено валидных видео ссылок");
+                if (state.videoData.length === 0) throw new Error("Не найдено валидных видео данных");
                 
-                console.log(`Загружено ${state.videoLinks.length} видео`);
+                console.log(`Загружено ${state.videoData.length} видео с ценами`);
                 
             } catch (error) {
-                console.error("Ошибка загрузки видео:", error);
+                console.error("Ошибка загрузки данных:", error);
                 throw error;
             }
         }
@@ -318,6 +379,7 @@
                     state.isPlaying = true;
                     elements.logoVideo.muted = false;
                     elements.logoVideo.play();
+                    hidePrice(); // Скрываем цену для начального видео
                 })
                 .catch(error => {
                     showError("Ошибка воспроизведения: " + error.message);
@@ -326,7 +388,7 @@
 
         // Запуск ротации видео
         function startVideoRotation() {
-            if (state.videoLinks.length === 0) {
+            if (state.videoData.length === 0) {
                 console.warn("Нет видео для ротации");
                 return;
             }
@@ -345,27 +407,39 @@
 
         // Воспроизведение случайного видео
         function playRandomVideo() {
-            if (state.videoLinks.length === 0) return;
+            if (state.videoData.length === 0) return;
             
             let randomIndex;
             do {
-                randomIndex = Math.floor(Math.random() * state.videoLinks.length);
-            } while (randomIndex === state.lastIndex && state.videoLinks.length > 1);
+                randomIndex = Math.floor(Math.random() * state.videoData.length);
+            } while (randomIndex === state.currentVideoIndex && state.videoData.length > 1);
             
-            state.lastIndex = randomIndex;
-            const nextVideo = state.videoLinks[randomIndex];
+            state.currentVideoIndex = randomIndex;
+            const videoItem = state.videoData[randomIndex];
             
-            elements.videoPlayer.src = nextVideo;
+            elements.videoPlayer.src = videoItem.url;
             elements.videoPlayer.load();
             elements.videoPlayer.play()
                 .then(() => {
                     state.isPlaying = true;
+                    showPrice(videoItem.price); // Показываем цену для текущего видео
                 })
                 .catch(error => {
                     console.error("Ошибка воспроизведения видео:", error);
                     // Пробуем следующее видео
                     setTimeout(playRandomVideo, 2000);
                 });
+        }
+
+        // Показать цену
+        function showPrice(price) {
+            elements.priceValue.textContent = price + " MDL";
+            elements.priceContainer.classList.add('show');
+        }
+
+        // Скрыть цену
+        function hidePrice() {
+            elements.priceContainer.classList.remove('show');
         }
 
         // Обработчики событий видео
@@ -429,9 +503,11 @@
             
             state.isInitialVideo = true;
             state.isPlaying = false;
+            state.currentVideoIndex = -1;
             elements.logoVideo.src = INITIAL_LOGO_VIDEO;
             elements.logoVideo.loop = false;
             elements.videoPlayer.src = INITIAL_VIDEO;
+            hidePrice();
             hideError();
         }
 
