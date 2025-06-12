@@ -211,11 +211,32 @@
         ];
 
 
+
+        
+
+        // setInterval(() => {
+        //     const randomIndex = Math.floor(Math.random() * videoLinks.length);
+        //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.play();
+        // }, 10000);  // Переключение видео каждые 10 секунд
+
+        // let lastIndex = -1;
+
         setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * videoLinks.length);
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * videoLinks.length);
+            } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
+        
+            lastIndex = randomIndex;
             videoPlayer.src = videoLinks[randomIndex];
             videoPlayer.play();
-        }, 10000);  // Переключение видео каждые 10 секунд
+        }, 10000);
+
+
+
+
+        
     </script>
 </body>
 </html>
