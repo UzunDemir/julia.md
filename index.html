@@ -204,72 +204,144 @@
         muteBtn.addEventListener('click', () => videoPlayer.muted = !videoPlayer.muted);
         volumeControl.addEventListener('input', () => videoPlayer.volume = volumeControl.value);
 
-        // Основное видео переключение через 10 секунд
-        const videoLinks = [
-            "https://goods-vod.kwcdn.com/goods-video/4cb719ca66147118a93c1cf31f28539cc2f4bb81.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/4579cb89a89983e978610b339da051ba10861b97.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/09eeb951ffe89af089937e71ca092861db3d8654.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/f7eda1536d4a2df482e66679ca816968e6920cbc.f30.mp4",
-            // "https://goods-vod.kwcdn.com/goods-video/3a3b4f1cbf66827bd980730924825635eb1ba8d3.f30.mp4",
-            //"https://goods-vod.kwcdn.com/goods-video/e8f5b75573f25532a4b9714de7eeb6a5e233c199.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/b2f01491bc5bab8b28307e01e8b41e5631b45da0.f30.mp4",
-            //"https://goods-vod.kwcdn.com/goods-video/deb146e16e55d2371c04aa6fd7d7954a048eb3a7.f30.mp4",
-            //"https://goods-vod.kwcdn.com/goods-video/8ba1cd8c80f9fdef8d7a2881c2948dba353edae5.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/4a9ad63a73a3ab1dfec2a5a16cbf8efad208f40a.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/b5c350755d8daefd2245e0ff869abc50642b7fdc.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/278bc9a88c335a83ea1000b18d6c739a945843ff.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/3723acba1dc743437a2fb2ec4f738a3bc07b8cf2.f30.mp4",
-            //"https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
-            //"https://goods-vod.kwcdn.com/goods-video/65c40fad811037838fb019ddd895a8d4084dee2a.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/a02f7e3c2aa85a6314472b2402e9bd0a76b95717.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/ead365c237383b4d7909ca0bebd214c1c8cacdaf.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/18e526c8d03123f14de2cbd14066eb53e487e856.f30.mp4",
-            //"https://goods-vod.kwcdn.com/goods-video/784199174c99135555a898492b2781b58e28e3eb.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/049ad51e09410cd9c0907ee331e6da7c97ffc11a.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/ef6c50fb6351a82c003281d0066b812e037b3635.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/c24c18d4a81af13e2b49d3dfbaf657849bb2c61c.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/3bcbc03c8a280f66afbc222b2111ee1ebf3ef4d1.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/d7003bd392e599188be4f8235224c5ed79c0fc41.f30.mp4",
-            "https://goods-vod.kwcdn.com/goods-video/a3de99cfe5f738368649e9a58b6cad740770a335.f30.mp4"
-        ];
+        // // Основное видео переключение через 10 секунд
+        // const videoLinks = [
+        //     "https://goods-vod.kwcdn.com/goods-video/4cb719ca66147118a93c1cf31f28539cc2f4bb81.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/4579cb89a89983e978610b339da051ba10861b97.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/09eeb951ffe89af089937e71ca092861db3d8654.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/f7eda1536d4a2df482e66679ca816968e6920cbc.f30.mp4",
+        //     // "https://goods-vod.kwcdn.com/goods-video/3a3b4f1cbf66827bd980730924825635eb1ba8d3.f30.mp4",
+        //     //"https://goods-vod.kwcdn.com/goods-video/e8f5b75573f25532a4b9714de7eeb6a5e233c199.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/b2f01491bc5bab8b28307e01e8b41e5631b45da0.f30.mp4",
+        //     //"https://goods-vod.kwcdn.com/goods-video/deb146e16e55d2371c04aa6fd7d7954a048eb3a7.f30.mp4",
+        //     //"https://goods-vod.kwcdn.com/goods-video/8ba1cd8c80f9fdef8d7a2881c2948dba353edae5.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/4a9ad63a73a3ab1dfec2a5a16cbf8efad208f40a.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/b5c350755d8daefd2245e0ff869abc50642b7fdc.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/278bc9a88c335a83ea1000b18d6c739a945843ff.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/3723acba1dc743437a2fb2ec4f738a3bc07b8cf2.f30.mp4",
+        //     //"https://goods-vod.kwcdn.com/goods-video/e58d44eabcae0b5bb68756036703f00cd29cb82a.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/6ebfc2a8b3f49e3ad2b688f09a8b7aa2753deac9.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/c1cde06d9eafd2bec0e39bb953ab23da3880ca83.f30.mp4",
+        //     //"https://goods-vod.kwcdn.com/goods-video/65c40fad811037838fb019ddd895a8d4084dee2a.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/a02f7e3c2aa85a6314472b2402e9bd0a76b95717.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/ead365c237383b4d7909ca0bebd214c1c8cacdaf.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/18e526c8d03123f14de2cbd14066eb53e487e856.f30.mp4",
+        //     //"https://goods-vod.kwcdn.com/goods-video/784199174c99135555a898492b2781b58e28e3eb.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/049ad51e09410cd9c0907ee331e6da7c97ffc11a.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/ef6c50fb6351a82c003281d0066b812e037b3635.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/c24c18d4a81af13e2b49d3dfbaf657849bb2c61c.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/3bcbc03c8a280f66afbc222b2111ee1ebf3ef4d1.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/d7003bd392e599188be4f8235224c5ed79c0fc41.f30.mp4",
+        //     "https://goods-vod.kwcdn.com/goods-video/a3de99cfe5f738368649e9a58b6cad740770a335.f30.mp4"
+        // ];
 
 
 
         
 
-        // setInterval(() => {
-        //     const randomIndex = Math.floor(Math.random() * videoLinks.length);
-        //     videoPlayer.src = videoLinks[randomIndex];
-        //     videoPlayer.play();
-        // }, 10000);  // Переключение видео каждые 10 секунд
+        // // setInterval(() => {
+        // //     const randomIndex = Math.floor(Math.random() * videoLinks.length);
+        // //     videoPlayer.src = videoLinks[randomIndex];
+        // //     videoPlayer.play();
+        // // }, 10000);  // Переключение видео каждые 10 секунд
+
+        // // let lastIndex = -1;
+
+        // // setInterval(() => {
+        // //     let randomIndex;
+        // //     do {
+        // //         randomIndex = Math.floor(Math.random() * videoLinks.length);
+        // //     } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
+        
+        // //     lastIndex = randomIndex;
+        // //     videoPlayer.src = videoLinks[randomIndex];
+        // //     videoPlayer.play();
+        // // }, 10000);
 
         // let lastIndex = -1;
-
         // setInterval(() => {
         //     let randomIndex;
         //     do {
         //         randomIndex = Math.floor(Math.random() * videoLinks.length);
-        //     } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
-        
+        //     } while (randomIndex === lastIndex);
+            
         //     lastIndex = randomIndex;
         //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.load();
         //     videoPlayer.play();
         // }, 10000);
 
+        let videoLinks = []; // Массив для хранения ссылок на видео
         let lastIndex = -1;
-        setInterval(() => {
+        
+        // Функция для загрузки и парсинга CSV
+        async function loadVideoLinksFromCSV() {
+            try {
+                const response = await fetch('filtered_tictactoys.csv'); // Путь к вашему CSV-файлу
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить CSV файл');
+                }
+                
+                const csvData = await response.text();
+                videoLinks = parseCSV(csvData);
+                
+                // Запускаем переключение видео после загрузки
+                if (videoLinks.length > 0) {
+                    setInterval(switchVideo, 10000);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки видео:', error);
+                // Резервный список на случай ошибки
+                videoLinks = [
+                    "https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4",
+                    "https://example.com/backup-video.mp4"
+                ];
+                setInterval(switchVideo, 10000);
+            }
+        }
+        
+        // Функция для парсинга CSV и извлечения ссылок из столбца 'Video'
+        function parseCSV(csvData) {
+            const lines = csvData.split('\n');
+            const headers = lines[0].split(',');
+            const videoIndex = headers.findIndex(header => header.trim() === 'Video');
+            
+            if (videoIndex === -1) {
+                console.error('Столбец "Video" не найден в CSV файле');
+                return [];
+            }
+            
+            const links = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                if (values[videoIndex]) {
+                    const link = values[videoIndex].trim().replace(/"/g, '');
+                    if (link.startsWith('http')) {
+                        links.push(link);
+                    }
+                }
+            }
+            
+            return links;
+        }
+        
+        // Функция переключения видео (остается без изменений)
+        function switchVideo() {
+            if (videoLinks.length === 0) return;
+            
             let randomIndex;
             do {
                 randomIndex = Math.floor(Math.random() * videoLinks.length);
-            } while (randomIndex === lastIndex);
+            } while (randomIndex === lastIndex && videoLinks.length > 1);
             
             lastIndex = randomIndex;
             videoPlayer.src = videoLinks[randomIndex];
             videoPlayer.load();
             videoPlayer.play();
-        }, 10000);
+        }
+        
+        // Загружаем видео при загрузке страницы
+        window.addEventListener('DOMContentLoaded', loadVideoLinksFromCSV);
 
 
         
