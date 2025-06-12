@@ -159,6 +159,14 @@
             transform: translateY(20px);
             opacity: 0;
             transition: all 0.5s ease;
+            cursor: pointer;
+            animation: pricePulse 2s infinite;
+        }
+
+        @keyframes pricePulse {
+            0% { transform: translateY(0) scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 0, 0.7); }
+            70% { transform: translateY(0) scale(1.05); box-shadow: 0 0 0 10px rgba(255, 102, 0, 0); }
+            100% { transform: translateY(0) scale(1); box-shadow: 0 0 0 0 rgba(255, 102, 0, 0); }
         }
 
         .price-container.show {
@@ -171,6 +179,7 @@
             font-weight: bold;
             color: white;
             margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .buy-button {
@@ -183,11 +192,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .buy-button:hover {
             background: #f0f0f0;
             transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -251,13 +262,15 @@
         const INITIAL_VIDEO = "https://cdn.pixabay.com/video/2022/12/08/142126-779469406_large.mp4";
         const SECONDARY_LOGO_VIDEO = "https://files.catbox.moe/t1qsm0.mp4";
         const INITIAL_LOGO_VIDEO = "https://files.catbox.moe/n5dpni.mp4";
+        const VIDEO_DURATION = 10000; // 10 секунд
         const ROTATION_INTERVAL = 10000; // 10 секунд
 
         // Состояние приложения
         const state = {
             isInitialVideo: true,
-            videoData: [], // Теперь храним не только ссылки, но и цены
+            videoData: [],
             videoRotationInterval: null,
+            videoPlayTimeout: null,
             isPlaying: false,
             currentVideoIndex: -1
         };
@@ -282,6 +295,19 @@
             // Обработка ошибок видео
             elements.videoPlayer.addEventListener('error', handleVideoError);
             elements.logoVideo.addEventListener('error', handleLogoVideoError);
+            
+            // Клик по ценовому блоку
+            elements.priceContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('buy-button')) {
+                    e.stopPropagation();
+                    return;
+                }
+                window.open('http://julia.md/', '_blank');
+            });
+            
+            document.querySelector('.buy-button').addEventListener('click', function() {
+                window.open('http://julia.md/', '_blank');
+            });
         }
 
         // Запуск презентации
@@ -379,7 +405,7 @@
                     state.isPlaying = true;
                     elements.logoVideo.muted = false;
                     elements.logoVideo.play();
-                    hidePrice(); // Скрываем цену для начального видео
+                    hidePrice();
                 })
                 .catch(error => {
                     showError("Ошибка воспроизведения: " + error.message);
@@ -397,6 +423,9 @@
             if (state.videoRotationInterval) {
                 clearInterval(state.videoRotationInterval);
             }
+            if (state.videoPlayTimeout) {
+                clearTimeout(state.videoPlayTimeout);
+            }
             
             // Первое видео из списка
             playRandomVideo();
@@ -408,6 +437,11 @@
         // Воспроизведение случайного видео
         function playRandomVideo() {
             if (state.videoData.length === 0) return;
+            
+            // Очищаем предыдущий таймер
+            if (state.videoPlayTimeout) {
+                clearTimeout(state.videoPlayTimeout);
+            }
             
             let randomIndex;
             do {
@@ -422,11 +456,18 @@
             elements.videoPlayer.play()
                 .then(() => {
                     state.isPlaying = true;
-                    showPrice(videoItem.price); // Показываем цену для текущего видео
+                    showPrice(videoItem.price);
+                    
+                    // Устанавливаем таймер на 10 секунд
+                    state.videoPlayTimeout = setTimeout(() => {
+                        if (state.videoData.length > 1) {
+                            playRandomVideo();
+                        }
+                    }, VIDEO_DURATION);
                 })
                 .catch(error => {
                     console.error("Ошибка воспроизведения видео:", error);
-                    // Пробуем следующее видео
+                    // Пробуем следующее видео через 2 секунды
                     setTimeout(playRandomVideo, 2000);
                 });
         }
@@ -499,6 +540,10 @@
             if (state.videoRotationInterval) {
                 clearInterval(state.videoRotationInterval);
                 state.videoRotationInterval = null;
+            }
+            if (state.videoPlayTimeout) {
+                clearTimeout(state.videoPlayTimeout);
+                state.videoPlayTimeout = null;
             }
             
             state.isInitialVideo = true;
