@@ -241,16 +241,29 @@
 
         // let lastIndex = -1;
 
+        // setInterval(() => {
+        //     let randomIndex;
+        //     do {
+        //         randomIndex = Math.floor(Math.random() * videoLinks.length);
+        //     } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
+        
+        //     lastIndex = randomIndex;
+        //     videoPlayer.src = videoLinks[randomIndex];
+        //     videoPlayer.play();
+        // }, 10000);
+
         setInterval(() => {
             let randomIndex;
             do {
                 randomIndex = Math.floor(Math.random() * videoLinks.length);
-            } while (randomIndex === lastIndex);  // повторять, если индекс совпал с предыдущим
+            } while (randomIndex === lastIndex);
         
             lastIndex = randomIndex;
             videoPlayer.src = videoLinks[randomIndex];
-            videoPlayer.play();
+            videoPlayer.load();      // Заставляем видео загрузиться
+            videoPlayer.play();      // Запускаем воспроизведение
         }, 10000);
+
 
 
 
