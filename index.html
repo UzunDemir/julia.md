@@ -579,18 +579,6 @@
         // Запуск приложения
         init();
     </script>
-    <script>
-    // Безопасная загрузка стороннего виджета
-    (function() {
-        const botScript = document.createElement('script');
-        botScript.src = 'https://sitebot-nu.vercel.app/loader.js';
-        botScript.setAttribute('data-bot', 'pk_f15c0c8c4f13e41b3aecb277');
-        botScript.async = true;
-        botScript.onerror = function() {
-            console.warn('Не удалось загрузить виджет чат-бота (сервер Vercel недоступен или блокируется).');
-        };
-        document.body.appendChild(botScript);
-    })();
-</script>
+    <script src="https://sitebot-nu.vercel.app/loader.js?v=7" data-bot="pk_2cb95e5157bf049c2f0711c5" async></script>
 </body>
 </html>
